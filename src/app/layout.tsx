@@ -1,4 +1,18 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignOutButton,
+  UserButton,
+  ClerkProvider,
+  ClerkLoading,
+} from "@clerk/nextjs";
+import { Navigation } from "@/components/navigation";
+
+import { Skeleton } from "@/components/ui/skeleton";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -23,12 +37,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body>
+          {/* <nav className="flex justify-between items-center px-6 py-4 border-b">
+            <div className="flex gap-6">
+              <Link href="/">Upload</Link>
+              <Link href="/jobs">Jobs</Link>
+            </div>
+            <div className="flex gap-6">
+              <SignedIn>
+                <ClerkLoading>
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </ClerkLoading>
+                <UserButton />
+                <Navigation />
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal" />
+              </SignedOut>
+            </div>
+          </nav> */}
+          <Navigation />
+          <main className="p-6 max-w-3xl mx-auto">{children}</main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
