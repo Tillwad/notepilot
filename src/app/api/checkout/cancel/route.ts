@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   console.log("Cancel subscription for user:", userId);
 
   // Fetch user subscription from DB
-  const user = await prisma.User.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } });
 
   if (!user || !user.stripeSubscriptionId) {
     return new Response("Subscription not found", { status: 404 });
