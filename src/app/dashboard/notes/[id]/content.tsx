@@ -3,12 +3,16 @@ import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 
-export default async function NoteDetailPage({ params }: { params: { id: string } }) {
+export async function NoteDetailPage({
+  id,
+}: {
+   id: string | undefined;
+}) {
   const { userId } = await auth();
   if (!userId) return <p className="text-center">Nicht eingeloggt.</p>;
 
   const note = await prisma.note.findFirst({
-    where: { id: params.id, userId },
+    where: { id: id, userId },
   });
 
   if (!note) return notFound();
@@ -23,13 +27,13 @@ export default async function NoteDetailPage({ params }: { params: { id: string 
       <div>
         <h2 className="font-semibold">Entscheidungen</h2>
         <ul className="list-disc list-inside">
-          {note.decisions.map((item, i) => <li key={i}>{item}</li>)}
+          {note.decisions.map((item: string, i: number) => <li key={i}>{item}</li>)}
         </ul>
       </div>
       <div>
         <h2 className="font-semibold">To-Dos</h2>
         <ul className="list-disc list-inside">
-          {note.actionItems.map((item, i) => <li key={i}>{item}</li>)}
+          {note.actionItems.map((item: string, i: number) => <li key={i}>{item}</li>)}
         </ul>
       </div>
       <div>

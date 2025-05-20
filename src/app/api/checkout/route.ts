@@ -1,8 +1,8 @@
 // app/api/checkout/route.ts
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/prisma";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { getUser } from "@/lib/user";
 
 export async function POST(req: Request) {
   const { userId } = await auth();
@@ -10,23 +10,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
+  const url = new URL(req.url); // <-- Zugriff auf Query-Params
+  const redirectPath = url.searchParams.get("redirect") || "/dashboard";
+
+  const client = await clerkClient();
+  const clerkUser = await client.users.getUser(userId);
+  const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+  if (!email) throw new Error("Keine E-Mail gefunden");
+
+  const user = await getUser(userId);
 
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        price: process.env.STRIPE_PRODUCT_PRICE_ID_SUB!, // Get this from Stripe Dashboard
+        price: process.env.STRIPE_PRODUCT_PRICE_ID_SUB!,
         quantity: 1,
       },
     ],
-    mode: "subscription", // or 'subscription'
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout?success=true`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout?canceled=true`,
-    ...(user.stripeCustomerId && { customer: user.stripeCustomerId }),
+    mode: "subscription",
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout?redirect=${redirectPath}&success=true`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout?redirect=${redirectPath}&canceled=true`,
+    ...(!user?.stripeCustomerId
+      ? { customer_email: email }
+      : { customer: user.stripeCustomerId }),
     metadata: {
-      customerId: userId, // <-- Clerk-User-ID hier rein!
+      customerId: userId,
     },
   });
 

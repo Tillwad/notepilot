@@ -8,6 +8,8 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return new Response("Unauthorized", { status: 401 });
 
+  console.log("Cancel subscription for user:", userId);
+
   // Fetch user subscription from DB
   const user = await prisma.user.findUnique({ where: { id: userId } });
 

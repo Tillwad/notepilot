@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { SignIn, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUser } from "@/lib/user";
 
 type User = {
   id: string;
@@ -21,22 +20,22 @@ export default function PricingPage() {
   const router = useRouter();
 
   const handleUpgrade = async () => {
-    const res = await fetch("/api/checkout", { method: "POST" });
+    const res = await fetch("/api/checkout?redirect=/pricing", { method: "POST" });
     const { url } = await res.json();
     router.push(url);
   };
 
   const handleCredits = async () => {
-    const res = await fetch("/api/checkout/credits", { method: "POST" });
+    const res = await fetch("/api/checkout/credits?redirect=/pricing", { method: "POST" });
     const { url } = await res.json();
     router.push(url);
   };
 
-    const handleCancel = async () => {
-        const res = await fetch("/api/checkout/cancel", { method: "POST" });
-        const { url } = await res.json();
-        router.push(url);
-    };
+  const handleCancel = async () => {
+    const res = await fetch("/api/checkout/cancel", { method: "POST" });
+    const { url } = await res.json();
+    router.push(url);
+  };
 
   const fetchUserData = async () => {
     if (user) {
@@ -82,9 +81,13 @@ export default function PricingPage() {
           <Button
             className="mt-6 w-full cursor-pointer"
             onClick={() => router.push("/")}
-            disabled={(!userData?.hasPaid || userData?.credits === 0) && user}
+            disabled={(!userData?.hasPaid || userData?.credits === 0) && user !== null}
           >
-            {!userData?.hasPaid ? user ? "Ausgewählt" : "Jetzt starten" : "Jetzt starten"}
+            {!userData?.hasPaid
+              ? user
+                ? "Ausgewählt"
+                : "Jetzt starten"
+              : "Jetzt starten"}
           </Button>
         </div>
 
@@ -162,7 +165,7 @@ export default function PricingPage() {
 
       <Button onClick={() => handleCancel()} className="mt-8 cursor-pointer">
         Abbrechen
-        </Button>
+      </Button>
     </section>
   );
 }

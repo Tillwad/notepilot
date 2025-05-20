@@ -34,7 +34,7 @@ export const Navigation = () => {
             </SignedOut>
             <SignedIn>
               <Link href="/">Hochladen</Link>
-              <Link href="/notes">Notizen</Link>
+              <Link href="/dashboard">Dashboard</Link>
               <UserButton />
             </SignedIn>
           </div>

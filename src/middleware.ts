@@ -10,9 +10,8 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId, redirectToSignIn } = await auth();
 
   if (!userId && !isPublicRoute(req)) {
-    // Add custom logic to run before redirecting
-
-    return redirectToSignIn();
+    // Redirect unauthenticated users to the /sign-in page
+    return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 });
 
