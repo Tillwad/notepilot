@@ -1,30 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignOutButton,
-  UserButton,
-  ClerkProvider,
-  ClerkLoading,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Navigation } from "@/components/navigation";
+import  Footer from "@/components/footer";
 
-import { Skeleton } from "@/components/ui/skeleton";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -40,26 +20,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body>
-          {/* <nav className="flex justify-between items-center px-6 py-4 border-b">
-            <div className="flex gap-6">
-              <Link href="/">Upload</Link>
-              <Link href="/jobs">Jobs</Link>
-            </div>
-            <div className="flex gap-6">
-              <SignedIn>
-                <ClerkLoading>
-                  <Skeleton className="h-8 w-8 rounded-full" />
-                </ClerkLoading>
-                <UserButton />
-                <Navigation />
-              </SignedIn>
-              <SignedOut>
-                <SignInButton mode="modal" />
-              </SignedOut>
-            </div>
-          </nav> */}
           <Navigation />
-          <main className="p-6 max-w-3xl mx-auto">{children}</main>
+          <main className="">{children}</main>
+          <Footer />
         </body>
       </html>
     </ClerkProvider>

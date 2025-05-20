@@ -9,14 +9,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                  String   @id               // Clerk-User-ID (z. B. "user_abc123")
+  createdAt           DateTime @default(now())
+
+  // Subscription-Infos
+  stripeCustomerId      String?   @unique
+  stripeSubscriptionId  String?   @unique
+  subscriptionStatus    String?   // z.B. "active", "canceled", "past_due"
+  subscriptionExpiresAt DateTime? // current_period_end
+
+  notes               Note[]
+  credits             Int      @default(3)       // für Free-User mit Guthaben
+  hasPaid             Boolean  @default(false)   // für Abo-User
+}
+
 model Note {
   id          String   @id @default(cuid())
   userId      String
-  inputType   String
-  original    String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String?
+  transcript  String
   summary     String?
-  decisions   String?
-  actionItems String?
-  audioUrl    String?
+  decisions   String[] // ARRAY of strings
+  actionItems String[]
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

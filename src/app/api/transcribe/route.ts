@@ -6,34 +6,42 @@ import { createWriteStream } from "fs";
 import tmp from "tmp";
 import { createReadStream } from "fs";
 import { Readable } from "stream";
+import { auth } from "@clerk/nextjs/server";
+import { getUser } from "@/lib/user";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 export async function POST(req: Request) {
-  const formData = await req.formData();
-  const file = formData.get("file") as File;
-
-  if (!file) {
-    return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+  const { userId } = await auth();
+  
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  const user = await getUser(userId);
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
 
-  // Temporäre Datei anlegen
-  const tmpFile = tmp.fileSync({ postfix: ".mp3" });
-  
-  const writeStream = createWriteStream(tmpFile.name);
-  Readable.from(buffer).pipe(writeStream);
-
-  await new Promise<void>((resolve) => {
-    writeStream.on("finish", () => resolve());
-  });
+  if (!user.hasPaid && user.credits <= 0) {
+    return NextResponse.json(
+      { error: "User has no credits left" },
+      { status: 402 }
+    );
+  }
 
   try {
+    const formData = await req.formData();
+    const file = formData.get("file") as File;
+
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
+
     const transcription = await openai.audio.transcriptions.create({
-      file: createReadStream(tmpFile.name),
+      file: file,
       model: "whisper-1",
+      response_format: "text",
     });
 
     return NextResponse.json({ transcript: transcription });
