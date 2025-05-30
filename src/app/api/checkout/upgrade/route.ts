@@ -32,6 +32,13 @@ export async function POST(req: Request) {
     default:
       priceId = process.env.STRIPE_BRONZE_PRICE_ID;
   }
+  
+  if (!userData.stripeSubscriptionId) {
+    return NextResponse.json(
+      { error: "No active subscription found" },
+      { status: 400 }
+    );
+  }
 
   const subscription = await stripe.subscriptions.retrieve(
     userData.stripeSubscriptionId
@@ -54,7 +61,7 @@ export async function POST(req: Request) {
         },
       ],
       proration_behavior: "create_prorations",
-      collection_method: "charge_automatically"
+      collection_method: "charge_automatically",
     }
   );
 

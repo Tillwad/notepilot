@@ -32,22 +32,29 @@ async function mainLoop() {
         continue;
       }
 
-      // Prüfen, ob User genügend Credits hat
-      await Promise.all(
+      const validJobs = await Promise.all(
         jobs.map(async (job: any) => {
           const user = await prisma.user.findUnique({
             where: { id: job.userId },
           });
+
           if (!user || user.credits <= 0) {
             console.warn(`User ${job.userId} hat nicht genügend Credits.`);
             await prisma.transcriptionJob.update({
               where: { id: job.id },
               data: { status: "skipped" },
             });
-            return null; // Job überspringen
+            return null;
           }
-          limit(() => processJob(job));
+
+          return job;
         })
+      );
+
+      await Promise.all(
+        validJobs
+          .filter((job): job is NonNullable<typeof job> => job !== null)
+          .map((job) => limit(() => processJob(job)))
       );
     } catch (err) {
       console.error("Fehler in der Main-Loop:", err);
@@ -57,7 +64,9 @@ async function mainLoop() {
   }
 }
 
-async function processJob(job: Awaited<ReturnType<typeof prisma.transcriptionJob.findFirst>>) {
+async function processJob(
+  job: NonNullable<Awaited<ReturnType<typeof prisma.transcriptionJob.findFirst>>>
+) {
   console.log(`Bearbeite Job: ${job.id}`);
   await prisma.transcriptionJob.update({
     where: { id: job.id },
@@ -88,7 +97,7 @@ async function processJob(job: Awaited<ReturnType<typeof prisma.transcriptionJob
       },
     });
 
-        await prisma.user.update({
+    await prisma.user.update({
       where: { id: job.userId },
       data: {
         credits: {
@@ -109,7 +118,7 @@ async function processJob(job: Awaited<ReturnType<typeof prisma.transcriptionJob
         },
       },
     });
-    
+
     await prisma.transcriptionJob.update({
       where: { id: job.id },
       data: {
@@ -118,7 +127,9 @@ async function processJob(job: Awaited<ReturnType<typeof prisma.transcriptionJob
       },
     });
 
-    console.log(`Job ${job.id} als Fehler markiert und Credits zurückerstattet.`);
+    console.log(
+      `Job ${job.id} als Fehler markiert und Credits zurückerstattet.`
+    );
   }
 }
 
@@ -134,7 +145,7 @@ async function prepareFile(originalPath: string): Promise<string> {
 }
 
 function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 mainLoop();

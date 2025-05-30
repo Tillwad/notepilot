@@ -89,19 +89,12 @@ export default async function NoteDetailPage({ id }: { id: string }) {
             Ereignisse
           </h2>
           </div>
-          {/* Hier
-          {/* <ul className="list-disc list-inside text-gray-700">
-            {note.eventItems.map((event: any, i: number) => (
-              <li key={i}>
-                <strong>{event.title}</strong>
-                {event.location && ` (${event.location})`}
-                {event.date &&
-                  ` am ${new Date(event.date).toLocaleDateString()}`}
-                {event.time && ` um ${event.time}`}
-              </li>
-            ))}
-          </ul> */}
-          <EventChecklist events={note.eventItems} />
+          <EventChecklist
+  events={note.eventItems.map((item: any) => ({
+    ...item,
+    location: item.location ?? undefined, // converts null -> undefined
+  }))}
+/>
         </section>
       )}
 
