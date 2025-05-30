@@ -9,30 +9,100 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                  String   @id               // Clerk-User-ID (z. B. "user_abc123")
-  createdAt           DateTime @default(now())
-
-  // Subscription-Infos
-  stripeCustomerId      String?   @unique
-  stripeSubscriptionId  String?   @unique
-  subscriptionStatus    String?   // z.B. "active", "canceled", "past_due"
-  subscriptionExpiresAt DateTime? // current_period_end
-
-  notes               Note[]
-  credits             Int      @default(3)       // für Free-User mit Guthaben
-  hasPaid             Boolean  @default(false)   // für Abo-User
+enum SubscriptionTier {
+  FREE
+  BRONZE
+  SILBER
+  GOLD
 }
 
+enum SubscriptionStatus {
+  active
+  past_due
+  canceled
+  ended
+}
+
+
+model User {
+  id                      String   @id
+  createdAt               DateTime @default(now())
+
+  stripeCustomerId        String?  @unique
+  stripeSubscriptionId    String?  @unique
+  stripeProductId         String? 
+
+  subscriptionType        SubscriptionTier? @default(FREE)// ENUM (siehe unten)
+  subscriptionStatus      SubscriptionStatus?  // "active", "canceled", etc.
+  subscriptionExpiresAt   DateTime?
+
+  credits                 Int      @default(3)
+  hasPaid                 Boolean  @default(false)
+
+  notes                   Note[]
+  jobs                    TranscriptionJob[]
+}
+
+model TranscriptionJob {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  status     String   // 'pending' | 'processing' | 'done' | 'error'
+  filePath   String
+  transcript String?
+  noteId     String?
+  error      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+
 model Note {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  title       String?
-  transcript  String
-  summary     String?
-  decisions   String[] // ARRAY of strings
-  actionItems String[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id])
+
+  title         String?
+  transcript    String
+  summary       String?
+  decisions     String[]   // Entscheidungspunkte
+  todos         Todo[]   // ToDos
+
+  eventItems    Event[]    // Termine
+  videos        Video[]   // Nur für Gold, trotzdem als Relation
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Todo {
+  id        String   @id @default(cuid())
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  text      String
+  checked   Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id])
+
+  title     String
+  location  String?
+  date      DateTime @default(now()) // Datum + Zeit (kann später getrennt dargestellt werden)
+}
+
+model Video {
+  id        String   @id @default(cuid())
+  noteId    String
+  note      Note     @relation(fields: [noteId], references: [id])
+
+  url       String
+  preview   String?  // z. B. Thumbnail
+  timestamps Json?   // z. B. { "00:02:01": "Thema A", "00:15:30": "Zusammenfassung" }
 }

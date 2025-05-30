@@ -7,8 +7,6 @@ import ToolIconsRow from "@/components/ToolIconsRow";
 import UploadField from "@/components/UploadSection";
 
 export default function HeroSection() {
-  const [file, setFile] = useState<File | null>(null);
-
   return (
     <section className="relative min-h-[90vh] w-full flex flex-col justify-center items-center text-center px-4 bg-[var(--background)]">
       {/* Top Curve */}
@@ -60,7 +58,7 @@ export default function HeroSection() {
             animationDuration={700}
             interval={3500}
             textClassName="text-5xl sm:text-5xl md:text-8xl"
-            className="min-w-[10ch] md:min-w-[12ch] text-center"
+            className="min-w-[14ch] md:min-w-[12ch] text-center"
           />
         </span>{" "}
         in klare
@@ -74,22 +72,6 @@ export default function HeroSection() {
         automatisch Zusammenfassungen & To-Dos.
       </p>
 
-      {/* <form className="mt-8 mx-4 md:mx-0 flex flex-col sm:flex-row items-center gap-3 w-full max-w-xl z-5">
-        <input
-          type="file"
-          accept="video/*,audio/*"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-          className="w-full border rounded px-4 py-2 text-sm shadow-sm"
-        />
-        <Button
-          type="button"
-          disabled={!file}
-          className="flex gap-2 items-center"
-        >
-          <Upload className="w-4 h-4" />
-          Hochladen
-        </Button>
-      </form> */}
       <UploadField />
 
       <p className="text-xs text-gray-400 mt-2">

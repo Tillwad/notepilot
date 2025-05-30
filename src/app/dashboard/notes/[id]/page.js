@@ -1,5 +1,6 @@
-import { NoteDetailPage } from "./content";
+"use server";
+import NoteDetailPage from "./content";
 
-export default function NoteDetailWrapper({ params }) {
+export default async function NoteDetailWrapper({ params }) {
   return <NoteDetailPage id={params.id} />;
 }

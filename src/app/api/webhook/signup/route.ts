@@ -2,6 +2,7 @@
 import { headers } from "next/headers";
 import { Webhook } from "svix";
 import { prisma } from "@/lib/prisma";
+import { stripe } from "@/lib/stripe";
 
 export const config = {
   api: {
@@ -37,9 +38,36 @@ export async function POST(req: Request) {
     const clerkId = data.id;
 
     try {
+      const session = await stripe.customers.create({
+        email: data.email_addresses[0].email_address,
+        metadata: {
+          customerId: clerkId,
+          subscriptionType: "FREE",
+        },
+      });
+
+      console.log("✅ Stripe-Kunde erstellt:", clerkId);
+
+      const sub = await stripe.subscriptions.create({
+        customer: session.id,
+        items: [
+          {
+            price: process.env.STRIPE_FREE_PRICE_ID,
+          },
+        ],
+        metadata: {
+          customerId: clerkId,
+          selectedPlan: "FREE",
+        },
+      });
+
+      console.log("✅ Stripe-Subscription erstellt:", sub.id);
+
       await prisma.user.create({
         data: {
           id: clerkId,
+          stripeCustomerId: session.id,
+          subscriptionType: "FREE",
         },
       });
 

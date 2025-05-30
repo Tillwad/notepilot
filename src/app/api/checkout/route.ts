@@ -10,8 +10,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const url = new URL(req.url); // <-- Zugriff auf Query-Params
+  const url = new URL(req.url);
+  const plan = (url.searchParams.get("plan") || "BRONZE").toUpperCase();
   const redirectPath = url.searchParams.get("redirect") || "/dashboard";
+
+  if (!["BRONZE", "SILBER", "GOLD"].includes(plan)) {
+    return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
+  }
+
+  var priceId: string | undefined;
+  switch (plan) {
+    case "SILBER":
+      priceId = process.env.STRIPE_SILVER_PRICE_ID;
+      break;
+    case "GOLD":
+      priceId = process.env.STRIPE_GOLD_PRICE_ID;
+      break;
+    default:
+      priceId = process.env.STRIPE_BRONZE_PRICE_ID;
+  }
 
   const client = await clerkClient();
   const clerkUser = await client.users.getUser(userId);
@@ -23,18 +40,20 @@ export async function POST(req: Request) {
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        price: process.env.STRIPE_PRODUCT_PRICE_ID_SUB!,
+        price: priceId,
         quantity: 1,
       },
     ],
     mode: "subscription",
     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout?redirect=${redirectPath}&success=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout?redirect=${redirectPath}&canceled=true`,
-    ...(!user?.stripeCustomerId
-      ? { customer_email: email }
-      : { customer: user.stripeCustomerId }),
+    ...(user.stripeCustomerId
+      ? { customer: user.stripeCustomerId }
+      : { customer_email: email }),
+    client_reference_id: userId,
     metadata: {
       customerId: userId,
+      selectedPlan: plan,
     },
   });
 
