@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "NotePilot - Notizen aus Audio & Video",
   description: "Verwandle Meetings in strukturierte Stichpunkte & To-Dos mit NotePilot. Schnell. Sicher. Automatisiert.",
   keywords: ["KI Notizen", "Meeting Zusammenfassung", "Audio zu Text", "NotePilot"],
+  metadataBase: new URL("https://www.notepilot.de"),
   openGraph: {
     title: "NotePilot",
     description: "Deine smarte Meeting-Notizhilfe.",

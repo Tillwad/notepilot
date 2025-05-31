@@ -23,12 +23,13 @@ export async function saveNote({
     time?: string;
   }[];
 }) {
-  // User absichern
-  await prisma.user.upsert({
+  // Check if user exists
+  const user = await prisma.user.findUnique({
     where: { id: userId },
-    update: {}, // nothing to update
-    create: { id: userId, createdAt: new Date() }, // create user if not exists
   });
+  if (!user) {
+    throw new Error("User not found");
+  }
 
   return prisma.note.create({
     data: {
