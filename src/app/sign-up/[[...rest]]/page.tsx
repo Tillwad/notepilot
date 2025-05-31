@@ -5,7 +5,7 @@ export default function LoginPage() {
 
     return (
     <main className="h-[90vh] max-w-2xl mx-auto py-12 px-6 flex flex-col items-center">
-      <SignUp signInUrl="/sign-in" forceRedirectUrl={"/dashboard"}/>
+      <SignUp signInUrl="/sign-in" forceRedirectUrl={"/start"}/>
     
       {/* Bottom Curve */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0 pointer-events-none">
