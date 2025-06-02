@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Navigation } from "@/components/navigation";
 import  Footer from "@/components/footer";
-import Script from "next/script";
 
 import "./globals.css";
 import CookieConsentBanner from "@/components/CookieConsentBanner";

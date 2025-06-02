@@ -2,73 +2,81 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { LoaderCircle, Upload } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
+import { upload } from "@vercel/blob/client";
 
-
-export default function UploadField({ onUploadSuccess, onNewJobId }: { onUploadSuccess?: () => void, onNewJobId?: (jobId: string) => void }) {
+export default function UploadField({
+  onUploadSuccess,
+  onNewJobId,
+}: {
+  onUploadSuccess?: () => void;
+  onNewJobId?: (jobId: string) => void;
+}) {
   const { user } = useUser();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleUpload = async () => {
     if (!file) return;
+    setLoading(true);
 
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/blob/upload",
+      });
 
-    const res = await fetch("/api/job/start", {
-      method: "POST",
-      body: formData,
-    });
+      if (!blob.url || !("jobId" in blob)) {
+        throw new Error("Upload abgeschlossen, aber jobId fehlt.");
+      }
 
-    if (!res.ok) {
-      const error = await res.json();
-      console.error("Fehler beim Hochladen:", error);
-      return;
+      const jobId = (blob as any).jobId;
+
+      setFile(null);
+      if (onNewJobId) onNewJobId(jobId);
+      if (onUploadSuccess) onUploadSuccess();
+    } catch (err) {
+      console.error("Upload fehlgeschlagen:", err);
+    } finally {
+      setLoading(false);
     }
-
-    const {jobId} = await res.json();
-    
-    setLoading(false);
-    setFile(null);
-
-    if (onNewJobId) onNewJobId(jobId);
-    if (onUploadSuccess) onUploadSuccess();
-
   };
 
   return (
     <div className="w-full flex flex-col items-center gap-4">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleUpload();
-            setLoading(true);
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleUpload();
+        }}
+        className="mt-8 mx-4 md:mx-0 flex flex-col sm:flex-row items-center gap-3 w-full max-w-xl"
+      >
+        <input
+          type="file"
+          accept="audio/*,video/*,.m4a,.mp3,.mp4,.wav"
+          onClick={(e) => {
+            if (!user) {
+              e.preventDefault();
+            }
           }}
-          className="mt-8 mx-4 md:mx-0 flex flex-col sm:flex-row items-center gap-3 w-full max-w-xl"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="cursor-pointer w-full border rounded px-4 py-2 text-sm shadow-sm"
+          disabled={loading}
+        />
+        <Button
+          type="submit"
+          disabled={!file || loading}
+          className="flex gap-2 items-center"
         >
-          <input
-            type="file"
-            accept="audio/*,video/*,.m4a,.mp3,.mp4,.wav"
-            onClick={(e) => {
-              if (!user) {
-                e.preventDefault();
-              }
-            }}
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="cursor-pointer w-full border rounded px-4 py-2 text-sm shadow-sm"
-            disabled={loading}
-          />
-          <Button
-            type="submit"
-            disabled={!file || loading}
-            className="flex gap-2 items-center"
-          >
+          {!loading ? (
             <Upload className="w-4 h-4" />
-            Hochladen
-          </Button>
-        </form>
+          ) : (
+            <LoaderCircle className="w-4 h-4 animate-spin" />
+          )}
+          Hochladen
+        </Button>
+      </form>
     </div>
   );
 }
