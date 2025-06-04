@@ -14,8 +14,9 @@ export async function POST(req: Request) {
   if (!user)
     return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  const formData = await req.formData();
-  const blobUrl = formData.get("blobUrl") as string;
+  const body = await req.json(); 
+  const blobUrl = body.blobUrl;
+
   if (!blobUrl)
     return NextResponse.json({ error: "Missing blobUrl" }, { status: 400 });
 
