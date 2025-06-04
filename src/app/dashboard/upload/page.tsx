@@ -5,7 +5,6 @@ import { useUser } from "@clerk/nextjs";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState, useRef } from "react";
 import JobsSection from "@/components/JobsSection";
-import { useRouter } from "next/navigation";
 
 type User = {
   subscriptionType: string;
@@ -18,96 +17,103 @@ export default function UploadPage() {
   const [jobRefreshTrigger, setJobRefreshTrigger] = useState(0);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Lade aktuelle User-Daten
   const fetchUser = async () => {
     if (!user) return;
-
-    const res = await fetch("/api/user", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: user.id }),
-    });
-
-    const data = await res.json();
-    setUser(data);
+    try {
+      const res = await fetch("/api/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      const data = await res.json();
+      setUser(data);
+    } catch (err) {
+      console.error("Fehler beim Laden des Benutzers:", err);
+    }
   };
 
-  const startPolling = (id: string) => {
-    if (!id || id === "undefined") return;
-    if (pollingRef.current) clearInterval(pollingRef.current);
+  // Stoppe aktives Polling
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+  // Frische Jobs und Benutzer neu auf
+  const refreshJobsAndUser = () => {
+    setJobRefreshTrigger((prev) => prev + 1);
+    fetchUser();
+  };
+
+  // Status-Verarbeitung
+  const handleJobStatus = (status: string, data: any) => {
+    switch (status) {
+      case "done":
+      case "error":
+      case "skipped": {
+        stopPolling();
+        localStorage.removeItem("activeJobId");
+        refreshJobsAndUser();
+        if (status === "error") alert("Fehler: " + (data.error || "Unbekannter Fehler"));
+        if (status === "skipped") alert("Kein Credit – Datei wurde übersprungen.");
+        break;
+      }
+      case "processing":
+      case "pending": {
+        refreshJobsAndUser();
+        break;
+      }
+    }
+  };
+
+  // Starte Polling
+  const startPolling = (jobId: string) => {
+    if (!jobId || jobId === "undefined") return;
+    stopPolling();
 
     pollingRef.current = setInterval(async () => {
       if (document.visibilityState !== "visible") return;
 
-      const res = await fetch(`/api/job/status?jobId=${id}`);
-      const data = await res.json();
-
-      if (data.status === "done") {
-        localStorage.removeItem("activeJobId");
-        clearInterval(pollingRef.current!);
-        pollingRef.current = null;
-      } else if (data.status === "error") {
-        localStorage.removeItem("activeJobId");
-        clearInterval(pollingRef.current!);
-        pollingRef.current = null;
-        alert("Fehler: " + (data.error || "Unbekannter Fehler"));
-      } else if (data.status === "processing") {
-        setJobRefreshTrigger((prev) => prev + 1);
-      } else if (data.status === "pending") {
-        setJobRefreshTrigger((prev) => prev + 1);
-      } else if (data.status === "skipped") {
-        localStorage.removeItem("activeJobId");
-        clearInterval(pollingRef.current!);
-        pollingRef.current = null;
-        alert("Kein Credit - Datei wurde übersprungen.");
+      try {
+        const res = await fetch(`/api/job/status?jobId=${jobId}`);
+        const data = await res.json();
+        handleJobStatus(data.status, data);
+      } catch (err) {
+        console.error("Polling-Fehler:", err);
+        stopPolling();
       }
     }, 5000);
   };
 
+  // Wird aufgerufen, sobald ein neuer Job erstellt wurde
   const handleNewJob = (id: string) => {
     localStorage.setItem("activeJobId", id);
     startPolling(id);
-    setJobRefreshTrigger((prev) => prev + 1);
   };
 
+  // Lade User beim Start
   useEffect(() => {
     fetchUser();
-    if (!user) return;
-    const savedJobId =
-      typeof window !== "undefined"
-        ? localStorage.getItem("activeJobId")
-        : null;
-    if (savedJobId && savedJobId !== "undefined") {
-      startPolling(savedJobId);
-      return;
-    }
-
-    (async () => {
-      const res = await fetch(`/api/job/status?userId=${user.id}`);
-      const data = await res.json();
-      if (data.status === "pending" || data.status === "processing") {
-        localStorage.setItem("activeJobId", data.jobId);
-        startPolling(data.jobId);
-      }
-    })();
   }, [user]);
 
+  // Wiederaufnahme von aktiven Jobs beim Reload
   useEffect(() => {
-    return () => {
-      if (pollingRef.current) clearInterval(pollingRef.current);
-    };
+    const jobId = localStorage.getItem("activeJobId");
+    if (jobId && jobId !== "undefined") {
+      startPolling(jobId);
+    }
   }, []);
 
+  // Aufräumen bei Unmount
+  useEffect(() => stopPolling, []);
+
   if (!user)
-    return (
-      <div className="text-center mt-12 text-gray-500">Nicht eingeloggt.</div>
-    );
+    return <div className="text-center mt-12 text-gray-500">Nicht eingeloggt.</div>;
 
   if (!userData)
-    return (
-      <div className="text-center mt-12 text-gray-500">
-        Lade Benutzerdaten ...
-      </div>
-    );
+    return <div className="text-center mt-12 text-gray-500">Lade Benutzerdaten ...</div>;
 
   return (
     <div className="max-w-3xl mx-auto py-6 px-0 mb:px-6">
@@ -122,11 +128,14 @@ export default function UploadPage() {
 
       <section className="bg-white border rounded-xl shadow-sm p-6">
         <p className="text-sm text-gray-600 mb-4">
-          Lade eine Audio- oder Videodatei hoch, um sie automatisch
-          transkribieren und analysieren zu lassen.
+          Lade eine Audio- oder Videodatei hoch, um sie automatisch transkribieren und analysieren zu lassen.
         </p>
 
-        <UploadField onUploadSuccess={fetchUser} onNewJobId={handleNewJob} />
+        <UploadField
+          onUploadSuccess={fetchUser}
+          onUploadError={fetchUser}
+          onNewJobId={handleNewJob}
+        />
       </section>
 
       <section className="bg-white border rounded-xl shadow-sm p-6 mt-8">

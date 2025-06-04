@@ -37,7 +37,7 @@ export default function JobsSection({
       const maxj = getVisibleJobs(data, maxJobs);
       setJobs(maxj);
     } catch (err) {
-      // console.error("Fehler beim Laden der Jobs:", err);
+      console.error("Fehler beim Laden der Jobs:", err);
     } finally {
       setLoading(false);
     }

@@ -8,9 +8,11 @@ import { upload } from "@vercel/blob/client";
 
 export default function UploadField({
   onUploadSuccess,
+  onUploadError,
   onNewJobId,
 }: {
   onUploadSuccess?: () => void;
+  onUploadError?: () => void;
   onNewJobId?: (jobId: string) => void;
 }) {
   const { user } = useUser();
@@ -53,6 +55,7 @@ export default function UploadField({
       if (onUploadSuccess) onUploadSuccess();
     } catch (err) {
       console.error("Upload fehlgeschlagen:", err);
+      if (onUploadError) onUploadError();
     } finally {
       setLoading(false);
     }

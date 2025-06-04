@@ -34,7 +34,7 @@ export async function GET() {
     where: {
       userId: { in: userIds },
       createdAt: { lt: oneDayAgo },
-      status: "done",
+      status: { in: ["done", "error"] },
     },
   });
 
