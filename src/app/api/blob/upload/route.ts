@@ -2,7 +2,6 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
@@ -28,19 +27,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         console.log("blob upload completed", blob);
-        if (typeof tokenPayload !== "string") {
-          throw new Error("Invalid tokenPayload");
-        }
-        const { userId } = JSON.parse(tokenPayload);
-        const job = await prisma.transcriptionJob.create({
-          data: {
-            userId,
-            status: "pending",
-            filePath: blob.url,
-          },
-        });
-
-        console.log("✅ Job erstellt:", job.id);
       },
     });
 
