@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/worker/transcription",
-      "schedule": "*/2 * * * *"
+      "schedule": "*/1 * * * *"
     },
     {
       "path": "/api/worker/cleanup",

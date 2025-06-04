@@ -31,14 +31,13 @@ export default function JobsSection({
   const [loading, setLoading] = useState(true);
 
   const fetchJobs = async () => {
-    setLoading(true);
     try {
       const res = await fetch(`/api/job/done`);
       const data = await res.json();
       const maxj = getVisibleJobs(data, maxJobs);
       setJobs(maxj);
     } catch (err) {
-      console.error("Fehler beim Laden der Jobs:", err);
+      // console.error("Fehler beim Laden der Jobs:", err);
     } finally {
       setLoading(false);
     }

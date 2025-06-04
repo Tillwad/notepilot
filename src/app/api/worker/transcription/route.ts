@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createReadStream } from "fs";
+import { createWriteStream, createReadStream } from "fs";
 import { promisify } from "util";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
@@ -77,11 +77,20 @@ async function processJob(job: {
     data: { status: "processing" },
   });
 
+  const tmpPath = path.join("/tmp", `${uuidv4()}.mp3`);
+
   try {
-    const filePath = await prepareFile(job.filePath);
+    // Datei von blobUrl herunterladen
+    const res = await fetch(job.filePath);
+    if (!res.ok) throw new Error(`Fehler beim Laden der Datei: ${res.statusText}`);
+
+    const buffer = Buffer.from(await res.arrayBuffer());
+    await fs.writeFile(tmpPath, buffer);
+
+    const finalPath = await prepareFile(tmpPath);
 
     const transcription = await openai.audio.transcriptions.create({
-      file: createReadStream(filePath),
+      file: createReadStream(finalPath),
       model: "whisper-1",
       response_format: "text",
     });
@@ -109,7 +118,7 @@ async function processJob(job: {
       },
     });
 
-    await fs.unlink(filePath);
+    await fs.unlink(finalPath);
     console.log(`Job ${job.id} erfolgreich abgeschlossen.`);
   } catch (err: any) {
     console.error(`Fehler bei Job ${job.id}:`, err.message);
@@ -128,18 +137,22 @@ async function processJob(job: {
         error: err.message || "Unbekannter Fehler",
       },
     });
+
+    try {
+      await fs.unlink(tmpPath);
+    } catch {}
   }
 }
 
-async function prepareFile(originalPath: string): Promise<string> {
-  const stats = await fs.stat(originalPath);
+async function prepareFile(localPath: string): Promise<string> {
+  const stats = await fs.stat(localPath);
 
-  if (stats.size < 25 * 1024 * 1024) return originalPath;
+  if (stats.size < 25 * 1024 * 1024) return localPath;
 
-  const mp3Path = path.join(path.dirname(originalPath), `${uuidv4()}.mp3`);
-  const command = `ffmpeg -y -i "${originalPath}" -ar 16000 -ac 1 -b:a 64k "${mp3Path}"`;
+  const mp3Path = path.join("/tmp", `${uuidv4()}.mp3`);
+  const command = `ffmpeg -y -i "${localPath}" -ar 16000 -ac 1 -b:a 64k "${mp3Path}"`;
 
   await execAsync(command);
-  await fs.unlink(originalPath);
+  await fs.unlink(localPath);
   return mp3Path;
 }

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { LoaderCircle, Upload } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { upload } from "@vercel/blob/client";
-import { prisma } from "@/lib/prisma";
 
 export default function UploadField({
   onUploadSuccess,
@@ -31,7 +30,7 @@ export default function UploadField({
       if (!blob.url) {
         throw new Error("Upload abgeschlossen, aber url fehlt.");
       }
-      
+
       const res = await fetch("/api/job/start", {
         method: "POST",
         headers: {
@@ -41,11 +40,13 @@ export default function UploadField({
           blobUrl: blob.url,
         }),
       });
-      
+
       if (!res.ok) {
         throw new Error("Fehler beim Starten des Jobs: " + res.statusText);
       }
       const { jobId } = await res.json();
+
+      fetch("/api/worker/transcription");
 
       setFile(null);
       if (onNewJobId) onNewJobId(jobId);

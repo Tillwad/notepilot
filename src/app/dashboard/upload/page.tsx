@@ -60,7 +60,7 @@ export default function UploadPage() {
         pollingRef.current = null;
         alert("Kein Credit - Datei wurde übersprungen.");
       }
-    }, 3500);
+    }, 5000);
   };
 
   const handleNewJob = (id: string) => {
