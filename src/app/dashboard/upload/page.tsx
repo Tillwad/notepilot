@@ -16,9 +16,7 @@ export default function UploadPage() {
   const { user } = useUser();
   const [userData, setUser] = useState<User | null>(null);
   const [jobRefreshTrigger, setJobRefreshTrigger] = useState(0);
-  const [jobId, setJobId] = useState<string | null>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
-  const router = useRouter();
 
   const fetchUser = async () => {
     if (!user) return;
@@ -53,11 +51,9 @@ export default function UploadPage() {
         pollingRef.current = null;
         alert("Fehler: " + (data.error || "Unbekannter Fehler"));
       } else if (data.status === "processing") {
-        setJobId(id);
-        setJobRefreshTrigger(prev => prev + 1);
+        setJobRefreshTrigger((prev) => prev + 1);
       } else if (data.status === "pending") {
-        setJobId(id);
-        setJobRefreshTrigger(prev => prev + 1);
+        setJobRefreshTrigger((prev) => prev + 1);
       } else if (data.status === "skipped") {
         localStorage.removeItem("activeJobId");
         clearInterval(pollingRef.current!);
@@ -68,18 +64,19 @@ export default function UploadPage() {
   };
 
   const handleNewJob = (id: string) => {
-    setJobId(id);
     localStorage.setItem("activeJobId", id);
     startPolling(id);
-    setJobRefreshTrigger(prev => prev + 1);
+    setJobRefreshTrigger((prev) => prev + 1);
   };
-  
+
   useEffect(() => {
     fetchUser();
     if (!user) return;
-    const savedJobId = typeof window !== "undefined" ? localStorage.getItem("activeJobId") : null;
+    const savedJobId =
+      typeof window !== "undefined"
+        ? localStorage.getItem("activeJobId")
+        : null;
     if (savedJobId && savedJobId !== "undefined") {
-      setJobId(savedJobId);
       startPolling(savedJobId);
       return;
     }
@@ -88,7 +85,6 @@ export default function UploadPage() {
       const res = await fetch(`/api/job/status?userId=${user.id}`);
       const data = await res.json();
       if (data.status === "pending" || data.status === "processing") {
-        setJobId(data.jobId);
         localStorage.setItem("activeJobId", data.jobId);
         startPolling(data.jobId);
       }
@@ -102,10 +98,16 @@ export default function UploadPage() {
   }, []);
 
   if (!user)
-    return <div className="text-center mt-12 text-gray-500">Nicht eingeloggt.</div>;
+    return (
+      <div className="text-center mt-12 text-gray-500">Nicht eingeloggt.</div>
+    );
 
   if (!userData)
-    return <div className="text-center mt-12 text-gray-500">Lade Benutzerdaten ...</div>;
+    return (
+      <div className="text-center mt-12 text-gray-500">
+        Lade Benutzerdaten ...
+      </div>
+    );
 
   return (
     <div className="max-w-3xl mx-auto py-6 px-0 mb:px-6">

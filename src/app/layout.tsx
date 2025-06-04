@@ -2,15 +2,21 @@ import type { Metadata } from "next";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { Navigation } from "@/components/navigation";
-import  Footer from "@/components/footer";
+import Footer from "@/components/footer";
 
 import "./globals.css";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
 
 export const metadata: Metadata = {
   title: "NotePilot - Notizen aus Audio & Video",
-  description: "Verwandle Meetings in strukturierte Stichpunkte & To-Dos mit NotePilot. Schnell. Sicher. Automatisiert.",
-  keywords: ["KI Notizen", "Meeting Zusammenfassung", "Audio zu Text", "NotePilot"],
+  description:
+    "Verwandle Meetings in strukturierte Stichpunkte & To-Dos mit NotePilot. Schnell. Sicher. Automatisiert.",
+  keywords: [
+    "KI Notizen",
+    "Meeting Zusammenfassung",
+    "Audio zu Text",
+    "NotePilot",
+  ],
   metadataBase: new URL("https://www.notepilot.de"),
   openGraph: {
     title: "NotePilot",
@@ -54,10 +60,9 @@ export const metadata: Metadata = {
     canonical: "https://notepilot.de",
     languages: {
       "de-DE": "https://notepilot.de",
-    }
-  }
+    },
+  },
 };
-
 
 export default function RootLayout({
   children,
@@ -67,12 +72,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        
         <body>
           <Navigation />
           <main className="">{children}</main>
           <Footer />
-            <CookieConsentBanner /> {/* <- hier einfügen */}
+          <CookieConsentBanner /> {/* <- hier einfügen */}
         </body>
       </html>
     </ClerkProvider>

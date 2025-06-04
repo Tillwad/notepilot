@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SignIn, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
@@ -244,8 +243,8 @@ function PlanCard({
             ? "Nicht Verfügbar"
             : "Aktive"
           : userData
-          ? "Jetzt upgraden"
-          : "Jetzt starten"}
+            ? "Jetzt upgraden"
+            : "Jetzt starten"}
       </Button>
       {popular && (
         <div className="absolute -top-5 -right-5 bg-accent text-white rounded-full py-2 px-4 pointer-events-none">

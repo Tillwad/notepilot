@@ -112,14 +112,20 @@ export default function JobsSection({
                   <Link
                     href={`/dashboard/upload`}
                     className="flex-1 flex flex-col md:flex-row md:items-center md:justify-between w-full"
-                      onClick={() => {
-                        if (job.status === "skipped" || job.status === "error") {
-                          fetch(`/api/job/start?jobId=${job.id}`, { method: "POST" })
-                            .then(() => fetchJobs())
-                            .catch(err => console.error("Fehler beim Neustarten des Jobs:", err));
-                        }
+                    onClick={() => {
+                      if (job.status === "skipped" || job.status === "error") {
+                        fetch(`/api/job/start?jobId=${job.id}`, {
+                          method: "POST",
+                        })
+                          .then(() => fetchJobs())
+                          .catch((err) =>
+                            console.error(
+                              "Fehler beim Neustarten des Jobs:",
+                              err,
+                            ),
+                          );
                       }
-                      }
+                    }}
                   >
                     <span className="font-medium">
                       {job.transcript
@@ -143,9 +149,7 @@ export default function JobsSection({
                     </span>
                   </Link>
                 ) : (
-                  <div
-                    className="flex-1 flex flex-col md:flex-row md:items-center md:justify-between w-full"
-                  >
+                  <div className="flex-1 flex flex-col md:flex-row md:items-center md:justify-between w-full">
                     <span className="font-medium">
                       {job.status === "pending" || job.status === "processing"
                         ? "Transkription läuft..."

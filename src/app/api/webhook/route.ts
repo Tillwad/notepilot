@@ -142,8 +142,10 @@ export async function POST(req: Request) {
         data: {
           subscriptionStatus: status,
           subscriptionExpiresAt: currentPeriodEnd,
-          subscriptionType: priceId === process.env.STRIPE_BRONZE_PRICE_ID
-            ? "BRONZE" : "SILBER",
+          subscriptionType:
+            priceId === process.env.STRIPE_BRONZE_PRICE_ID
+              ? "BRONZE"
+              : "SILBER",
         },
       });
     }

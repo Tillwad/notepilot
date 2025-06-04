@@ -59,7 +59,10 @@ export default function FeatureSection() {
 
         {/* WHY CHOOSE */}
         <div>
-          <h2 className="text-5xl font-bold mb-12">Warum <span className="font-allura">Note</span><span className="text-accent">Pilot</span>?</h2>
+          <h2 className="text-5xl font-bold mb-12">
+            Warum <span className="font-allura">Note</span>
+            <span className="text-accent">Pilot</span>?
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
             <Feature
               icon={<Clock className="w-6 h-6 text-accent" />}

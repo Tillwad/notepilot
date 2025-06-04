@@ -70,7 +70,7 @@ export default function TodoChecklist({ todos }: { todos: Todo[] }) {
 
   const handleSaveEdit = async (id: string) => {
     const updatedTodos = stateTodos.map((todo) =>
-      todo.id === id ? { ...todo, text: editText } : todo
+      todo.id === id ? { ...todo, text: editText } : todo,
     );
     setStateTodos(updatedTodos);
     setEditId(null);
@@ -99,7 +99,7 @@ export default function TodoChecklist({ todos }: { todos: Todo[] }) {
           <Checkbox
             id={`todo-${item.id}`}
             name={`todo-${item.id}`}
-            checked={item.checked} 
+            checked={item.checked}
             onClick={() => handleToggle(stateTodos.indexOf(item))} // Verhindert das Schließen des Eingabefelds beim Klicken auf die Checkbox
             className="h-5 w-5"
           />

@@ -1,12 +1,11 @@
 "use client";
-import { SignIn, useUser } from "@clerk/nextjs";
+import { SignIn } from "@clerk/nextjs";
 
-export default function LoginPage() { 
-
-    return (
+export default function LoginPage() {
+  return (
     <main className="h-[90vh] max-w-2xl mx-auto py-12 px-6 flex flex-col items-center">
-      <SignIn signUpUrl="/sign-up" forceRedirectUrl={"/dashboard"}/>
-    
+      <SignIn signUpUrl="/sign-up" forceRedirectUrl={"/dashboard"} />
+
       {/* Bottom Curve */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-0 pointer-events-none">
         <svg

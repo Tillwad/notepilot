@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
-  var priceId: string | undefined;
+  let priceId: string | undefined;
   switch (plan) {
     case "SILBER":
       priceId = process.env.STRIPE_SILVER_PRICE_ID;
@@ -32,16 +32,16 @@ export async function POST(req: Request) {
     default:
       priceId = process.env.STRIPE_BRONZE_PRICE_ID;
   }
-  
+
   if (!userData.stripeSubscriptionId) {
     return NextResponse.json(
       { error: "No active subscription found" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const subscription = await stripe.subscriptions.retrieve(
-    userData.stripeSubscriptionId
+    userData.stripeSubscriptionId,
   );
 
   // Gehe davon aus, dass es nur EIN Subscription-Item gibt
@@ -62,13 +62,13 @@ export async function POST(req: Request) {
       ],
       proration_behavior: "create_prorations",
       collection_method: "charge_automatically",
-    }
+    },
   );
 
   if (!session) {
     return NextResponse.json(
       { error: "Subscription not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
   return NextResponse.json({ status: 200 });

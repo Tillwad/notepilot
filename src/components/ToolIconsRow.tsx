@@ -19,7 +19,10 @@ export default function ToolIconsRow() {
       <div className="flex flex-wrap justify-center items-center gap-10">
         {/* Google Meet */}
         {images.map((src, index) => (
-          <div key={index} className="flex items-center gap-2 font-semibold text-sm">
+          <div
+            key={index}
+            className="flex items-center gap-2 font-semibold text-sm"
+          >
             <Image
               src={src}
               alt="Logo"

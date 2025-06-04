@@ -5,7 +5,7 @@ export default function LegalPage() {
     <main className="h-[90vh] flex justify-center px-4 py-24 mt-8">
       <div className="max-w-xl w-full">
         <div className="flex items-center justify-center">
-        <h1 className="text-3xl font-bold mb-6 text-black">Rechtliches</h1>
+          <h1 className="text-3xl font-bold mb-6 text-black">Rechtliches</h1>
         </div>
 
         <p className="text-gray-700 mb-6">

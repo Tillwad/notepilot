@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Pencil,
-  Trash2,
-  Save,
-} from "lucide-react";
+import { Pencil, Trash2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -23,7 +19,8 @@ export default function EventChecklist({ events }: { events: EventItem[] }) {
   const [formState, setFormState] = useState<Partial<EventItem>>({});
 
   const handleDelete = (id: string) => {
-    if (!confirm("Bist du sicher, dass du dieses Ereignis löschen möchtest?")) return;
+    if (!confirm("Bist du sicher, dass du dieses Ereignis löschen möchtest?"))
+      return;
 
     const deleteEvent = async () => {
       try {
@@ -48,7 +45,7 @@ export default function EventChecklist({ events }: { events: EventItem[] }) {
 
   const handleSaveEdit = async (id: string) => {
     const updated = stateEvents.map((e) =>
-      e.id === id ? { ...e, ...formState } : e
+      e.id === id ? { ...e, ...formState } : e,
     );
     setStateEvents(updated);
     setEditId(null);
@@ -68,10 +65,7 @@ export default function EventChecklist({ events }: { events: EventItem[] }) {
   return (
     <ul className="space-y-2">
       {stateEvents.map((event) => (
-        <li
-          key={event.id}
-          className="bg-gray-50 p-4 rounded-lg border"
-        >
+        <li key={event.id} className="bg-gray-50 p-4 rounded-lg border">
           <div className="flex justify-between items-start">
             <div className="flex flex-col gap-1 w-full">
               {editId === event.id ? (
@@ -79,25 +73,33 @@ export default function EventChecklist({ events }: { events: EventItem[] }) {
                   <Input
                     value={formState.title || ""}
                     placeholder="Titel"
-                    onChange={(e) => setFormState({ ...formState, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormState({ ...formState, title: e.target.value })
+                    }
                   />
                   <Input
                     value={formState.location || ""}
                     placeholder="Ort"
-                    onChange={(e) => setFormState({ ...formState, location: e.target.value })}
+                    onChange={(e) =>
+                      setFormState({ ...formState, location: e.target.value })
+                    }
                   />
                   <div className="flex gap-2">
                     <Input
                       type="date"
                       className="w-full"
                       value={formState.date || ""}
-                      onChange={(e) => setFormState({ ...formState, date: e.target.value })}
+                      onChange={(e) =>
+                        setFormState({ ...formState, date: e.target.value })
+                      }
                     />
                     <Input
                       type="time"
                       className="w-full"
                       value={formState.time || ""}
-                      onChange={(e) => setFormState({ ...formState, time: e.target.value })}
+                      onChange={(e) =>
+                        setFormState({ ...formState, time: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -109,14 +111,17 @@ export default function EventChecklist({ events }: { events: EventItem[] }) {
                     </h3>
                     {(event.date || event.time) && (
                       <span className="text-sm text-gray-500">
-                        {event.date && new Date(event.date).toLocaleDateString("de-DE")}
+                        {event.date &&
+                          new Date(event.date).toLocaleDateString("de-DE")}
                         {event.date && event.time && " "}
                         {event.time && event.time}
                       </span>
                     )}
                   </div>
                   {event.location && (
-                    <p className="text-gray-600 text-sm mt-1">{event.location}</p>
+                    <p className="text-gray-600 text-sm mt-1">
+                      {event.location}
+                    </p>
                   )}
                 </>
               )}

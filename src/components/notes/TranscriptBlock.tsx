@@ -16,12 +16,12 @@ export default function TranscriptBlock({ text }: { text: string }) {
       </pre>
       {isLong && (
         <div className="flex justify-center">
-        <button
-          onClick={() => setExpanded((prev) => !prev)}
-          className="text-sm text text-accent mt-2 hover:underline cursor-pointer"
-        >
-          {expanded ? "Weniger anzeigen" : "Mehr lesen"}
-        </button>
+          <button
+            onClick={() => setExpanded((prev) => !prev)}
+            className="text-sm text text-accent mt-2 hover:underline cursor-pointer"
+          >
+            {expanded ? "Weniger anzeigen" : "Mehr lesen"}
+          </button>
         </div>
       )}
     </div>

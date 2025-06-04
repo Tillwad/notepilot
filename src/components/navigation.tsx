@@ -6,7 +6,6 @@ import {
   UserButton,
   SignedIn,
   SignedOut,
-  useUser,
 } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -15,7 +14,6 @@ import { useState } from "react";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useUser();
 
   return (
     <nav className="h-[10vh] flex items-center">
@@ -33,12 +31,16 @@ export const Navigation = () => {
 
           {/* Mobile: Profile Icon als Toggle */}
           <div className="md:hidden">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="focus:outline-none cursor-pointer"
-              >
-                {!isOpen ? <Menu className="w-6 h-6" /> : <X className="w-6 h-6" />}
-              </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="focus:outline-none cursor-pointer"
+            >
+              {!isOpen ? (
+                <Menu className="w-6 h-6" />
+              ) : (
+                <X className="w-6 h-6" />
+              )}
+            </button>
           </div>
 
           {/* Desktop Nav */}

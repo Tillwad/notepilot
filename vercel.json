@@ -1,6 +1,12 @@
 {
-  "crons": [{
-    "path": "/api/worker",
-    "schedule": "0 10 * * *"
-  }]
+  "cron": [
+    {
+      "path": "/api/worker/transcription",
+      "schedule": "*/2 * * * *"
+    },
+    {
+      "path": "/api/worker/cleanup",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }

@@ -27,7 +27,10 @@ export default function UploadField({
         handleUploadUrl: "/api/blob/upload",
       });
 
-      if (!blob.url || !("jobId" in blob)) {
+      console.log("Blob:", blob);
+      console.log("Blob URL:", blob.url);
+
+      if (!blob.url) {
         throw new Error("Upload abgeschlossen, aber jobId fehlt.");
       }
 

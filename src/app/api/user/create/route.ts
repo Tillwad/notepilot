@@ -5,7 +5,11 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const { userId, email } = await req.json();
 
-  if (!userId || !email) return NextResponse.json({ error: "Missing userId or email" }, { status: 400 });
+  if (!userId || !email)
+    return NextResponse.json(
+      { error: "Missing userId or email" },
+      { status: 400 },
+    );
 
   console.log("Creating user with ID:", userId, "and email:", email);
 
@@ -17,9 +21,15 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: "User created successfully", user }, { status: 201 });
+    return NextResponse.json(
+      { message: "User created successfully", user },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Error creating user:", error);
-    return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create user" },
+      { status: 500 },
+    );
   }
 }

@@ -55,11 +55,11 @@ export default async function NoteDetailPage({ id }: { id: string }) {
       {note.decisions.length > 0 && (
         <section className="bg-white border rounded-xl shadow-sm p-6">
           <div className="flex items-center mb-4">
-            <FileText className="mr-2"/>
+            <FileText className="mr-2" />
 
-          <h2 className="text-lg font-semibold text-gray-800">
-            Entscheidungen 
-          </h2>
+            <h2 className="text-lg font-semibold text-gray-800">
+              Entscheidungen
+            </h2>
           </div>
           <ul className="list-disc list-inside text-gray-700">
             {note.decisions.map((item: string, i: number) => (
@@ -72,10 +72,10 @@ export default async function NoteDetailPage({ id }: { id: string }) {
       {/* To-Dos mit Checkboxen */}
       {note.todos.length !== 0 && (
         <section className="bg-white border rounded-xl shadow-sm p-6">
-            <div className="flex items-center mb-4">
+          <div className="flex items-center mb-4">
             <CheckCircle className="mr-2" />
             <h2 className="text-lg font-semibold text-gray-800">To-Dos</h2>
-            </div>
+          </div>
           <TodoChecklist todos={note.todos} />
         </section>
       )}
@@ -85,16 +85,14 @@ export default async function NoteDetailPage({ id }: { id: string }) {
         <section className="bg-white border rounded-xl shadow-sm p-6">
           <div className="flex items-center mb-4">
             <Calendar className="mr-2" />
-          <h2 className="text-lg font-semibold text-gray-800">
-            Ereignisse
-          </h2>
+            <h2 className="text-lg font-semibold text-gray-800">Ereignisse</h2>
           </div>
           <EventChecklist
-  events={note.eventItems.map((item: any) => ({
-    ...item,
-    location: item.location ?? undefined, // converts null -> undefined
-  }))}
-/>
+            events={note.eventItems.map((item: any) => ({
+              ...item,
+              location: item.location ?? undefined, // converts null -> undefined
+            }))}
+          />
         </section>
       )}
 
@@ -102,9 +100,9 @@ export default async function NoteDetailPage({ id }: { id: string }) {
       <section className="bg-white border rounded-xl shadow-sm p-6">
         <div className="flex items-center mb-4">
           <Mic2 className="mr-2" />
-        <h2 className="text-lg font-semibold mb-2 text-gray-800">
-          Originales Transkript
-        </h2>
+          <h2 className="text-lg font-semibold mb-2 text-gray-800">
+            Originales Transkript
+          </h2>
         </div>
         <TranscriptBlock text={note.transcript} />
       </section>

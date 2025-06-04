@@ -67,9 +67,7 @@ export default function ImpressumPage() {
           </p>
 
           <h2>Kontakt</h2>
-          <p>
-            E-Mail: kotnakt@notepilot.de
-          </p>
+          <p>E-Mail: kotnakt@notepilot.de</p>
 
           <h2>EU-Streitschlichtung</h2>
           <p>

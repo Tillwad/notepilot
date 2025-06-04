@@ -19,7 +19,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [lastJobs, setLastJobs] = useState<any[]>([]);
   const [upgrade, setUpgrade] = useState(true);
-  const [status, setStatus] = useState<"active" | "canceled" | "past_due" | "ended">("ended");
+  const [status, setStatus] = useState<
+    "active" | "canceled" | "past_due" | "ended"
+  >("ended");
   const { user } = useUser();
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export default function DashboardPage() {
         return;
       }
       setLastJobs(jobs.slice(0, 3)); // Zeige die letzten 3 Jobs an
-    }
+    };
     fetchLastJobs();
   }, [user]);
 
@@ -88,10 +90,9 @@ export default function DashboardPage() {
     const { url } = await res.json();
     if (url) window.location.href = url;
     setLoading(false);
-  }
+  };
 
   const totalCredits = subscription === "FREE" && isPaid ? 15 : 3;
-  const usedCredits = totalCredits - credits;
   const percentUsed = (credits / totalCredits) * 100;
 
   return (
@@ -175,14 +176,15 @@ export default function DashboardPage() {
                 style={{ width: `${percentUsed}%` }}
               />
             </div>
-            { credits === 0 && (
-                            <Button
+            {credits === 0 && (
+              <Button
                 onClick={handleCredits}
                 disabled={loading}
                 className="cursor-pointer mt-4"
               >
                 {loading ? "Weiterleitung…" : "Credits aufladen"}
-              </Button>)}
+              </Button>
+            )}
           </section>
         ) : (
           <section className="bg-white rounded-xl border p-6 shadow-sm">
@@ -201,36 +203,33 @@ export default function DashboardPage() {
             {/* Ablaufdatum */}
             {subscriptionDate && (
               <div>
-
-              <p className="text-sm text-gray-600">
-                {status === "active" ? "Erneuert am" : ""} Läuft ab am:{" "}
-                <strong>
-                  {new Date(subscriptionDate).toLocaleDateString("de-DE", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  })}
-                </strong>
-              </p>
-              {status === "past_due" && (
-                <p className="text-sm text-red-600 mt-2">
-                  Dein Abo ist überfällig! Bitte aktualisiere deine Zahlungsinformationen.
+                <p className="text-sm text-gray-600">
+                  {status === "active" ? "Erneuert am" : ""} Läuft ab am:{" "}
+                  <strong>
+                    {new Date(subscriptionDate).toLocaleDateString("de-DE", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </strong>
                 </p>
-              )}
-              {status === "canceled" && (
-                <div className="flex items-center justify-between ">
-                <p className="text-sm text-red-600 mt-2">
-                  Dein Abo wurde gekündigt.
-                </p>
-                <Link href="/dashboard/upload">
-                  <Button className="mt-2">
-                    Reaktiviren
-                  </Button>
-                </Link>
-                </div>
-              )}
+                {status === "past_due" && (
+                  <p className="text-sm text-red-600 mt-2">
+                    Dein Abo ist überfällig! Bitte aktualisiere deine
+                    Zahlungsinformationen.
+                  </p>
+                )}
+                {status === "canceled" && (
+                  <div className="flex items-center justify-between ">
+                    <p className="text-sm text-red-600 mt-2">
+                      Dein Abo wurde gekündigt.
+                    </p>
+                    <Link href="/dashboard/upload">
+                      <Button className="mt-2">Reaktiviren</Button>
+                    </Link>
+                  </div>
+                )}
               </div>
-
             )}
           </section>
         )}
@@ -243,10 +242,10 @@ export default function DashboardPage() {
             <p className="text-sm text-gray-600 mt-1">
               Keine Datei hochgeladen -{" "}
               <a
-          href="/dashboard/upload"
-          className="text-purple-600 hover:underline"
+                href="/dashboard/upload"
+                className="text-purple-600 hover:underline"
               >
-          jetzt starten
+                jetzt starten
               </a>
             </p>
           ) : (

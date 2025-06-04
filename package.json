@@ -24,6 +24,7 @@
     "buffer-to-stream": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.511.0",
     "motion": "^12.12.1",
     "next": "^15.2.3",
@@ -48,6 +49,7 @@
     "@types/tmp": "^0.2.6",
     "tailwindcss": "^4.1.7",
     "tw-animate-css": "^1.3.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.33.1"
   }
 }

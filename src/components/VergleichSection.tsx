@@ -4,7 +4,9 @@ export default function VergleichSection() {
   return (
     <section className="w-full bg-white py-16 px-4">
       <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-5xl font-bold mb-12">Vergleiche der <span className="text-accent">Abos</span></h2>
+        <h2 className="text-5xl font-bold mb-12">
+          Vergleiche der <span className="text-accent">Abos</span>
+        </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm md:text-base border-collapse">
             <thead>

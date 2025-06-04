@@ -46,7 +46,9 @@ export default function CookieConsentBanner() {
       {consent === null && (
         <div className="fixed bottom-4 left-4 right-4 max-w-2xl mx-auto bg-white border border-gray-300 shadow-md rounded-xl p-4 z-50 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm text-gray-800">
-            Diese Website verwendet Cookies, um Google Analytics zu laden (anonymisiert). Mit deiner Zustimmung hilfst du uns, die Seite zu verbessern.
+            Diese Website verwendet Cookies, um Google Analytics zu laden
+            (anonymisiert). Mit deiner Zustimmung hilfst du uns, die Seite zu
+            verbessern.
           </div>
           <div className="flex gap-2">
             <button

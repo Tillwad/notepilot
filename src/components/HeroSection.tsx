@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { ContainerTextFlip } from "./ui/container-text-flip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ToolIconsRow from "@/components/ToolIconsRow";

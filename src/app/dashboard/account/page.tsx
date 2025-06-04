@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Zap, Trash, RefreshCw, ArrowUpCircle, ShieldX } from "lucide-react";
+import { Zap, ShieldX } from "lucide-react";
 
 type SubscriptionType = "FREE" | "BRONZE" | "SILBER" | "GOLD" | null;
 
@@ -70,9 +70,12 @@ export default function AccountPage() {
     if (action === "cancel") {
       const confirmed = confirm("Möchtest du dein Abo wirklich kündigen?");
       if (!confirmed) return;
-      const res = await fetch(`/api/checkout/update?action=${action}&userId=${userData.id}`, {
-        method: "POST",
-      });
+      const res = await fetch(
+        `/api/checkout/update?action=${action}&userId=${userData.id}`,
+        {
+          method: "POST",
+        },
+      );
       if (res.ok) {
         alert("Abo wurde gekündigt.");
         window.location.reload();
@@ -84,9 +87,12 @@ export default function AccountPage() {
     if (action === "reactivate") {
       const confirmed = confirm("Möchtest du dein Abo wirklich reaktivieren?");
       if (!confirmed) return;
-      const res = await fetch(`/api/checkout/update?action=${action}&userId=${userData.id}`, {
-        method: "POST",
-      });
+      const res = await fetch(
+        `/api/checkout/update?action=${action}&userId=${userData.id}`,
+        {
+          method: "POST",
+        },
+      );
       if (res.ok) {
         alert("Abo wurde reaktiviert.");
         window.location.reload();
@@ -94,7 +100,6 @@ export default function AccountPage() {
         alert("Fehler bei der Abo-Verwaltung.");
       }
     }
-    
   };
 
   const handleUpgrade = async (plantype: string) => {
@@ -104,15 +109,18 @@ export default function AccountPage() {
     }
 
     confirm(
-      `Möchtest du dein Abo auf ${plantype} upgraden? Du wirst sofort belasted. Wenn du auf ja klickst stimmst unseren AGBs und Datenschutzbestimmungen zu.`
+      `Möchtest du dein Abo auf ${plantype} upgraden? Du wirst sofort belasted. Wenn du auf ja klickst stimmst unseren AGBs und Datenschutzbestimmungen zu.`,
     );
 
     if (!confirm) return;
 
     if (userData.subscriptionType === "FREE") {
-      const res = await fetch(`/api/checkout?plan=${plantype}&redirect=/dashboard/account`, {
-        method: "POST",
-      });
+      const res = await fetch(
+        `/api/checkout?plan=${plantype}&redirect=/dashboard/account`,
+        {
+          method: "POST",
+        },
+      );
       if (res.ok) {
         const { url } = await res.json();
         window.location.href = url;
@@ -180,7 +188,7 @@ export default function AccountPage() {
                 Läuft ab am:{" "}
                 <strong>
                   {new Date(userData.subscriptionExpiresAt).toLocaleDateString(
-                    "de-DE"
+                    "de-DE",
                   )}
                 </strong>
               </p>
@@ -196,7 +204,7 @@ export default function AccountPage() {
           )}
           <div className="flex gap-4 mt-4 flex-wrap">
             {PLAN_OPTIONS.filter(
-              (p) => p.type !== userData.subscriptionType && p.type !== "GOLD"
+              (p) => p.type !== userData.subscriptionType && p.type !== "GOLD",
             ).map((plan) => (
               <Button
                 key={plan.type}
