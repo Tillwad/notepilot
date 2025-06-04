@@ -1,5 +1,5 @@
 {
-  "cron": [
+  "crons": [
     {
       "path": "/api/worker/transcription",
       "schedule": "*/2 * * * *"
