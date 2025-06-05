@@ -57,7 +57,7 @@ export const Navigation = () => {
               <SignInButton mode="modal">
                 <span className="cursor-pointer">Anmelden</span>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" forceRedirectUrl={"/start"}>
                 <Button variant="default" size="sm" className="cursor-pointer">
                   Jetzt Anfangen
                 </Button>
@@ -90,7 +90,7 @@ export const Navigation = () => {
             <SignInButton mode="modal">
               <span className="cursor-pointer">Anmelden</span>
             </SignInButton>
-            <SignUpButton mode="modal">
+            <SignUpButton mode="modal" forceRedirectUrl={"/start"}>
               <Button variant="default" size="sm" className="cursor-pointer">
                 Jetzt Anfangen
               </Button>
