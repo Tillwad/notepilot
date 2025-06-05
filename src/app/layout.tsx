@@ -6,6 +6,7 @@ import Footer from "@/components/footer";
 
 import "./globals.css";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "NotePilot - Notizen aus Audio & Video",
@@ -77,6 +78,7 @@ export default function RootLayout({
           <main className="">{children}</main>
           <Footer />
           <CookieConsentBanner /> {/* <- hier einfügen */}
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

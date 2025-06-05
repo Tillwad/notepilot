@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Zap, ShieldX } from "lucide-react";
+import { toast } from "sonner";
 
 type SubscriptionType = "FREE" | "BRONZE" | "SILBER" | "GOLD" | null;
 
@@ -40,6 +41,7 @@ const PLAN_OPTIONS = [
 export default function AccountPage() {
   const { user } = useUser();
   const [userData, setUserData] = useState<User | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -74,7 +76,7 @@ export default function AccountPage() {
         `/api/checkout/update?action=${action}&userId=${userData.id}`,
         {
           method: "POST",
-        },
+        }
       );
       if (res.ok) {
         alert("Abo wurde gekündigt.");
@@ -91,7 +93,7 @@ export default function AccountPage() {
         `/api/checkout/update?action=${action}&userId=${userData.id}`,
         {
           method: "POST",
-        },
+        }
       );
       if (res.ok) {
         alert("Abo wurde reaktiviert.");
@@ -109,7 +111,7 @@ export default function AccountPage() {
     }
 
     confirm(
-      `Möchtest du dein Abo auf ${plantype} upgraden? Du wirst sofort belasted. Wenn du auf ja klickst stimmst unseren AGBs und Datenschutzbestimmungen zu.`,
+      `Möchtest du dein Abo auf ${plantype} upgraden? Du wirst sofort belasted. Wenn du auf ja klickst stimmst unseren AGBs und Datenschutzbestimmungen zu.`
     );
 
     if (!confirm) return;
@@ -119,7 +121,7 @@ export default function AccountPage() {
         `/api/checkout?plan=${plantype}&redirect=/dashboard/account`,
         {
           method: "POST",
-        },
+        }
       );
       if (res.ok) {
         const { url } = await res.json();
@@ -141,25 +143,13 @@ export default function AccountPage() {
   };
 
   const handleDeleteAccount = async () => {
-    if (userData?.stripeSubscriptionId) {
-      return alert("Bitte kündige dein Abo, bevor du deinen Account löschst.");
+    if (userData?.stripeSubscriptionId !== null) {
+      toast.error(
+        "Du musst dein Abo kündigen, bevor du deinen Account löschen kannst."
+      );
+      return;
     }
-
-    const confirmed = confirm("Möchtest du deinen Account wirklich löschen?");
-    if (!confirmed) return;
-
-    const res = await fetch("/api/delete-account", {
-      method: "POST",
-      body: JSON.stringify({ userId: user?.id }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (res.ok) {
-      alert("Dein Account wurde gelöscht.");
-      router.push("/goodbye");
-    } else {
-      alert("Fehler beim Löschen des Accounts.");
-    }
+    setShowDeleteModal(true);
   };
 
   if (!userData) {
@@ -188,7 +178,7 @@ export default function AccountPage() {
                 Läuft ab am:{" "}
                 <strong>
                   {new Date(userData.subscriptionExpiresAt).toLocaleDateString(
-                    "de-DE",
+                    "de-DE"
                   )}
                 </strong>
               </p>
@@ -204,7 +194,10 @@ export default function AccountPage() {
           )}
           <div className="flex gap-4 mt-4 flex-wrap">
             {PLAN_OPTIONS.filter(
-              (p) => p.type !== userData.subscriptionType && p.type !== "GOLD" && p.type !== "BRONZE",
+              (p) =>
+                p.type !== userData.subscriptionType &&
+                p.type !== "GOLD" &&
+                p.type !== "BRONZE"
             ).map((plan) => (
               <Button
                 key={plan.type}
@@ -222,21 +215,22 @@ export default function AccountPage() {
           <h2 className="text-lg font-semibold flex items-center gap-2 text-red-600">
             <ShieldX size={18} /> Gefährliche Section
           </h2>
-          {userData.subscriptionStatus === "active" && (
-            <>
-              <p className="text-sm text-gray-600 mt-2">
-                Wenn du deinen Abo kündigst, wird dein Account auf das
-                kostenlose Abo zurückgesetzt.
-              </p>
-              <Button
-                variant="outline"
-                className="mt-4 color-red-600 border-red-600 hover:bg-red-0 text-destructive hover:text-destructive cursor-pointer"
-                onClick={() => handleSubscriptionAction("cancel")}
-              >
-                Abo kündigen
-              </Button>
-            </>
-          )}
+          {userData.subscriptionStatus === "active" &&
+            userData.stripeSubscriptionId && (
+              <>
+                <p className="text-sm text-gray-600 mt-2">
+                  Wenn du deinen Abo kündigst, wird dein Account auf das
+                  kostenlose Abo zurückgesetzt.
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-4 color-red-600 border-red-600 hover:bg-red-0 text-destructive hover:text-destructive cursor-pointer"
+                  onClick={() => handleSubscriptionAction("cancel")}
+                >
+                  Abo kündigen
+                </Button>
+              </>
+            )}
           <p className="text-sm text-gray-600 mt-2">
             Wenn du deinen Account löschst, wird dein gesamtes Profil dauerhaft
             entfernt.
@@ -250,6 +244,48 @@ export default function AccountPage() {
             Account löschen
           </Button>
         </section>
+
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md text-center">
+              <h2 className="text-xl font-semibold text-red-600 mb-4">
+                Account wirklich löschen?
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Dein gesamter Account wird dauerhaft entfernt. Diese Aktion kann
+                nicht rückgängig gemacht werden.
+              </p>
+              <div className="flex justify-center gap-4">
+                <button
+                  className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm"
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-sm"
+                  onClick={async () => {
+                    const res = await fetch("/api/delete-account", {
+                      method: "POST",
+                      body: JSON.stringify({ userId: user?.id }),
+                      headers: { "Content-Type": "application/json" },
+                    });
+
+                    if (res.ok) {
+                      setShowDeleteModal(false);
+                      toast("Dein Account wurde gelöscht.");
+                      router.push("/goodbye");
+                    } else {
+                      toast("Fehler beim Löschen des Accounts.");
+                    }
+                  }}
+                >
+                  Ja, löschen
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
