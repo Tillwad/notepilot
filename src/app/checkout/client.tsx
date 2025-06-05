@@ -26,7 +26,7 @@ export default function CheckoutResultPage() {
   const handleManualRedirect = () => router.push(redirect);
 
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 space-y-6">
+    <div className="min-h-[90vh] flex flex-col items-center justify-center text-center px-4 space-y-6">
       {success && (
         <div className="space-y-4">
           <CheckCircle className="w-12 h-12 text-green-600 mx-auto" />

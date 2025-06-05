@@ -14,7 +14,8 @@ const isPublicRoute = createRouteMatcher([
   "/datenschutz",
   "/agb",
   "/legal",
-  "/goodbye",
+  "/widerrufsbelehrung",
+  "/feedback",
   "/site.webmanifest"
 ]);
 

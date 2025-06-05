@@ -1,12 +1,16 @@
 // src/app/api/webhook/route.ts
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { Resend } from "resend";
+import { clerkClient } from "@clerk/nextjs/server";
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
+
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export async function POST(req: Request) {
   const buf = await req.arrayBuffer();
@@ -165,7 +169,33 @@ export async function POST(req: Request) {
         },
       });
 
-      // customer email send:
+      const clerk = await clerkClient();
+      const userClerk = await clerk.users.getUser(user.id);
+      if (!userClerk) return new Response("Clerk user not found", { status: 404 });
+
+      userClerk.emailAddresses.forEach(async (email) => {
+        await resend.emails.send({
+          from: "NotePilot <no-reply@feedback.notepilot.de>",
+          to: email.emailAddress,
+          subject: "Schade, dass du gehst - Erneuere dein NotePilot-Abo",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+              <div style="background: #f5f7fa; padding: 24px 0; text-align: center;">
+          <img src="https://notepilot.de/logo.png" alt="NotePilot Logo" style="height: 48px;"/>
+              </div>
+              <div style="padding: 24px;">
+          <h2 style="color: #222;">Schade, dass du dein Abo gekündigt hast</h2>
+          <p>Hallo ${userClerk.firstName || "Nutzer"},</p>
+          <p>Wir haben deine Kündigung erhalten und finden es schade, dich als Nutzer zu verlieren.</p>
+          <p>Falls du es dir anders überlegst, kannst du dein NotePilot-Abonnement jederzeit ganz einfach <a href="https://notepilot.de/dashboard/account" style="color: #0070f3;">hier erneuern</a>.</p>
+          <p>Vielen Dank, dass du NotePilot genutzt hast!</p>
+          <p>Herzliche Grüße,<br/>Dein NotePilot-Team</p>
+              </div>
+            </div>
+          `,
+          text: `Hallo ${userClerk.firstName || "Nutzer"},\n\nWir haben deine Kündigung erhalten und finden es schade, dich als Nutzer zu verlieren.\n\nFalls du es dir anders überlegst, kannst du dein NotePilot-Abonnement jederzeit ganz einfach hier erneuern: https://notepilot.de/dashboard/account\n\nVielen Dank, dass du NotePilot genutzt hast!\n\nHerzliche Grüße,\nDein NotePilot-Team`,
+        });
+      });
     }
   } else if (event.type === "customer.subscription.deleted") {
     console.log("Subscription deleted");

@@ -286,7 +286,7 @@ export default function AccountPage() {
                     if (res.ok) {
                       setShowDeleteModal(false);
                       toast("Dein Account wurde gelöscht.");
-                      router.push("/goodbye");
+                      router.push("/feedback");
                     } else {
                       toast("Fehler beim Löschen des Accounts.");
                     }

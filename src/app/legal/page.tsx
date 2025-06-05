@@ -43,6 +43,14 @@ export default function LegalPage() {
               Allgemeine Geschäftsbedingungen (AGB)
             </Link>
           </li>
+          <li>
+            <Link
+              href="/widerrufsbelehrung"
+              className="hover:text-primary transition-colors underline"
+            >
+              Widerrufsbelehrung
+            </Link>
+          </li>
         </ul>
       </div>
     </main>
