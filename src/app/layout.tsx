@@ -74,8 +74,8 @@ export default function RootLayout({
           <Navigation />
           <main className="">{children}</main>
           <Footer />
-          <CookieConsentBanner /> {/* <- hier einfügen */}
           <Toaster />
+          <CookieConsentBanner /> {/* <- hier einfügen */}
         </body>
       </html>
     </ClerkProvider>

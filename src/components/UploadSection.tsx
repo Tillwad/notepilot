@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle, Upload } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { SignIn, SignUp, useUser } from "@clerk/nextjs";
 import { upload } from "@vercel/blob/client";
 
 export default function UploadField({
@@ -18,6 +18,7 @@ export default function UploadField({
   const { user } = useUser();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loginModal, setLoginModal] = useState(false);
 
   const handleUpload = async () => {
     if (!file) return;
@@ -76,6 +77,7 @@ export default function UploadField({
           onClick={(e) => {
             if (!user) {
               e.preventDefault();
+              setLoginModal(true);
             }
           }}
           onChange={(e) => setFile(e.target.files?.[0] || null)}
@@ -95,6 +97,17 @@ export default function UploadField({
           Hochladen
         </Button>
       </form>
+
+      {loginModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50"
+             onClick={() => setLoginModal(false)}>
+          <div className="rounded-lg max-w-md w-full"
+          onClick={(e) => e.stopPropagation()}>
+
+          <SignIn/>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
