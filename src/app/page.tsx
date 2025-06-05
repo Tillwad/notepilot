@@ -9,7 +9,7 @@ export default function HomePage() {
     <div className="">
       <HeroSection />
       <FeatureSection />
-      <VergleichSection />
+      {/* <VergleichSection /> */}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { Mail, Instagram } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t bg-accent text-base text-sm">
+    <footer className="w-full border-t bg-accent text-sm">
       <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-10 text-secondary">
         {/* Branding */}
         <div className="space-y-3">

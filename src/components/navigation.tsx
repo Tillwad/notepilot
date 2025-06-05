@@ -6,6 +6,7 @@ import {
   UserButton,
   SignedIn,
   SignedOut,
+  useUser,
 } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -13,6 +14,7 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export const Navigation = () => {
+  const { isLoaded, isSignedIn } = useUser();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -62,9 +64,13 @@ export const Navigation = () => {
               </SignUpButton>
             </SignedOut>
             <SignedIn>
-              <Link href="/dashboard/upload">Hochladen</Link>
-              <Link href="/dashboard">Dashboard</Link>
-              <UserButton />
+              {isLoaded && isSignedIn && (
+                <>
+                  <Link href="/dashboard/upload">Hochladen</Link>
+                  <Link href="/dashboard">Dashboard</Link>
+                  <UserButton />
+                </>
+              )}
             </SignedIn>
           </div>
         </div>
