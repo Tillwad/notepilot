@@ -42,6 +42,9 @@ export default function AccountPage() {
   const { user } = useUser();
   const [userData, setUserData] = useState<User | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isUpgrading, setIsUpgrading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -107,38 +110,47 @@ export default function AccountPage() {
   const handleUpgrade = async (plantype: string) => {
     if (!userData) return;
     if (userData.subscriptionType === plantype) {
-      return alert("Du hast bereits dieses Abo.");
+      return toast("Du hast bereits dieses Abo.");
     }
 
-    confirm(
-      `Möchtest du dein Abo auf ${plantype} upgraden? Du wirst sofort belasted. Wenn du auf ja klickst stimmst unseren AGBs und Datenschutzbestimmungen zu.`
-    );
+    setSelectedPlan(plantype);
+    setShowUpgradeModal(true);
+  };
 
-    if (!confirm) return;
+  const confirmUpgrade = async () => {
+    if (!selectedPlan || !userData) return;
 
-    if (userData.subscriptionType === "FREE") {
-      const res = await fetch(
-        `/api/checkout?plan=${plantype}&redirect=/dashboard/account`,
-        {
-          method: "POST",
+    setIsUpgrading(true);
+    try {
+      if (userData.subscriptionType === "FREE") {
+        const res = await fetch(
+          `/api/checkout?plan=${selectedPlan}&redirect=/dashboard/account`,
+          { method: "POST" }
+        );
+        if (res.ok) {
+          const { url } = await res.json();
+          window.location.href = url;
+        } else {
+          console.error("Upgrade fehlgeschlagen:", res.statusText);
+          toast.error("Upgrade fehlgeschlagen.");
         }
-      );
-      if (res.ok) {
-        const { url } = await res.json();
-        window.location.href = url;
       } else {
-        alert("Upgrade fehlgeschlagen.");
+        const res = await fetch(`/api/checkout/upgrade?plan=${selectedPlan}`, {
+          method: "POST",
+        });
+        if (res.ok) {
+          toast.success("Abo aktualisiert!");
+          window.location.reload();
+        } else {
+          toast.error("Upgrade fehlgeschlagen.");
+        }
       }
-    } else {
-      const res = await fetch(`/api/checkout/upgrade?plan=${plantype}`, {
-        method: "POST",
-      });
-      if (res.ok) {
-        alert("Abo aktualisiert!");
-        window.location.reload();
-      } else {
-        alert("Upgrade fehlgeschlagen.");
-      }
+    } catch (err) {
+      toast.error("Fehler beim Upgrade.");
+    } finally {
+      setIsUpgrading(false);
+      setShowUpgradeModal(false);
+      setSelectedPlan(null);
     }
   };
 
@@ -265,8 +277,8 @@ export default function AccountPage() {
                 <button
                   className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-sm"
                   onClick={async () => {
-                    const res = await fetch("/api/delete-account", {
-                      method: "POST",
+                    const res = await fetch("/api/user/delete", {
+                      method: "DELETE",
                       body: JSON.stringify({ userId: user?.id }),
                       headers: { "Content-Type": "application/json" },
                     });
@@ -281,6 +293,39 @@ export default function AccountPage() {
                   }}
                 >
                   Ja, löschen
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showUpgradeModal && selectedPlan && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md text-center">
+              <h2 className="text-xl font-semibold mb-4 text-primary">
+                Abo auf {selectedPlan} upgraden?
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                {userData.subscriptionType === "FREE"
+                  ? "Du wirst zur Zahlung weitergeleitet." :
+                   "Dein aktuelles Abo " + userData.subscriptionType + " wird auf " + selectedPlan + " aktualisiert."}
+              </p>
+              <div className="flex justify-center gap-4">
+                <button
+                  className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-sm"
+                  onClick={() => {
+                    setShowUpgradeModal(false);
+                    setSelectedPlan(null);
+                  }}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  className="px-4 py-2 rounded bg-primary text-white text-sm hover:bg-primary/90"
+                  onClick={confirmUpgrade}
+                  disabled={isUpgrading}
+                >
+                  {isUpgrading ? "Upgraden..." : "Upgrade bestätigen"}
                 </button>
               </div>
             </div>

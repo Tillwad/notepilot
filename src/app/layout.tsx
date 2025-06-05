@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   description:
     "Verwandle Meetings in strukturierte Stichpunkte & To-Dos mit NotePilot. Schnell. Sicher. Automatisiert.",
   keywords: [
+    "Meeting Notizen",
     "KI Notizen",
     "Meeting Zusammenfassung",
     "Audio zu Text",
@@ -23,8 +24,9 @@ export const metadata: Metadata = {
     title: "NotePilot",
     description: "Deine smarte Meeting-Notizhilfe.",
     url: "https://notepilot.de",
-    images: [{ url: "/og-image.png" }],
+    images: [{ url: "https://www.notepilot.de/og-image.png" }],
     siteName: "NotePilot",
+    type: "website"
   },
   twitter: {
     card: "summary_large_image",
@@ -44,7 +46,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  manifest: "/site.webmanifest",
   robots: {
     index: true,
     follow: true,
@@ -52,10 +53,6 @@ export const metadata: Metadata = {
     noimageindex: false,
     noarchive: false,
     nosnippet: false,
-  },
-  verification: {
-    google: "google-site-verification=your-google-verification-code",
-    yandex: "yandex-verification: your-yandex-verification-code",
   },
   alternates: {
     canonical: "https://notepilot.de",
