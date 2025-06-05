@@ -204,7 +204,7 @@ export default function AccountPage() {
           )}
           <div className="flex gap-4 mt-4 flex-wrap">
             {PLAN_OPTIONS.filter(
-              (p) => p.type !== userData.subscriptionType && p.type !== "GOLD",
+              (p) => p.type !== userData.subscriptionType && p.type !== "GOLD" && p.type !== "BRONZE",
             ).map((plan) => (
               <Button
                 key={plan.type}

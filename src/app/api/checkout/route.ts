@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   }
 
   const url = new URL(req.url);
-  const plan = (url.searchParams.get("plan") || "BRONZE").toUpperCase();
+  const plan = (url.searchParams.get("plan") || "SILBER").toUpperCase();
   const redirectPath = url.searchParams.get("redirect") || "/dashboard";
 
   if (!["BRONZE", "SILBER", "GOLD"].includes(plan)) {

@@ -129,7 +129,7 @@ export default function DashboardPage() {
               {(() => {
                 switch (subscription) {
                   case "FREE":
-                    return "Upgrade auf Bronze";
+                    return "Upgrade auf Silber";
                   case "BRONZE":
                     return "Upgrade auf Silber";
                   case "SILBER":
